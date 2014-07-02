@@ -6,8 +6,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.felipecsl.quickreturn.library.QuickReturnAttacher;
-import com.felipecsl.quickreturn.library.widget.QuickReturnAdapter;
+import com.felipecsl.quickreturn.library.QuickReturn;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -28,10 +27,7 @@ public class MainActivity extends ActionBarActivity {
         addMoreItems(100);
 
         int columns = gridView.getResources().getInteger(R.integer.grid_column_count);
-        gridView.setAdapter(QuickReturnAdapter.newInstance(adapter, gridView, columns));
-
-        final QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(gridView);
-        quickReturnAttacher.addTargetView(topTextView);
+        QuickReturn.with(adapter, gridView, columns).addHeader(topTextView);
     }
 
     private void addMoreItems(final int amount) {

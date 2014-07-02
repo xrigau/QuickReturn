@@ -6,22 +6,38 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
 
     private final ListAdapter wrappedAdapter;
     private final int verticalSpacing;
     private final int numColumns;
-    private int[] itemsVerticalOffset;
+
+    //    private int[] itemsVerticalOffset;
+    private List<Integer> itemsVerticalOffset;
 
     public static ListAdapter newInstance(ListAdapter adapter, GridView gridView, int columns) {
         int verticalSpacing = gridView.getVerticalSpacing();
-        int[] itemsVerticalOffset = new int[adapter.getCount() + columns];
+        List<Integer> itemsVerticalOffset = getZeroFilledList(adapter.getCount() + columns);
+
         QuickReturnAdapter quickReturnAdapter = new QuickReturnAdapter(adapter, verticalSpacing, columns, itemsVerticalOffset);
         adapter.registerDataSetObserver(quickReturnAdapter);
+
         return quickReturnAdapter;
     }
 
-    private QuickReturnAdapter(ListAdapter wrappedAdapter, int verticalSpacing, int numColumns, int[] itemsVerticalOffset) {
+    private static List<Integer> getZeroFilledList(int size) {
+        List<Integer> itemsVerticalOffset = new ArrayList<Integer>(size);
+        for (int i = 0; i < size; i++) {
+            itemsVerticalOffset.add(0);
+        }
+        return itemsVerticalOffset;
+    }
+
+    private QuickReturnAdapter(ListAdapter wrappedAdapter, int verticalSpacing, int numColumns, List<Integer> itemsVerticalOffset) {
         this.wrappedAdapter = wrappedAdapter;
         this.verticalSpacing = verticalSpacing;
         this.numColumns = numColumns;
@@ -70,16 +86,20 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
 
     @Override
     public View getView(final int position, final View convertView, final ViewGroup parent) {
-        View v = wrappedAdapter.getView(position, convertView, parent);
+        View itemView = wrappedAdapter.getView(position, convertView, parent);
 
-        v.measure(View.MeasureSpec.makeMeasureSpec(parent.getWidth() / numColumns, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        int finalHeight = v.getMeasuredHeight();
+        int finalHeight = getViewHeight(parent, itemView);
 
-        if (position + numColumns < itemsVerticalOffset.length) {
-            itemsVerticalOffset[position + numColumns] = itemsVerticalOffset[position] + finalHeight + verticalSpacing;
+        if (position + numColumns < itemsVerticalOffset.size()) {
+            itemsVerticalOffset.set(position + numColumns, itemsVerticalOffset.get(position) + finalHeight + verticalSpacing);
         }
 
-        return v;
+        return itemView;
+    }
+
+    private int getViewHeight(ViewGroup parent, View v) {
+        v.measure(View.MeasureSpec.makeMeasureSpec(parent.getWidth() / numColumns, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        return v.getMeasuredHeight();
     }
 
     @Override
@@ -101,7 +121,7 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
     }
 
     public int getPositionVerticalOffset(int position) {
-        return itemsVerticalOffset[position];
+        return itemsVerticalOffset.get(position);
     }
 
     public int getBottomVisibleItemOffset() {
@@ -109,21 +129,29 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
             return 0;
         }
 
-        int maxValue = 0;
-        for (int i = 0; i < itemsVerticalOffset.length; i++) {
-            maxValue = Math.max(maxValue, itemsVerticalOffset[i]);
-        }
-        return maxValue;
+        itemsVerticalOffset.size();
+//        return getMaxVerticalOffset();
+        return Collections.max(itemsVerticalOffset);
     }
+
+//    private int getMaxVerticalOffset() {
+//        int maxValue = 0;
+//        for (int i = 0; i < itemsVerticalOffset.length; i++) {
+//            maxValue = Math.max(maxValue, itemsVerticalOffset[i]);
+//        }
+//        return maxValue;
+//    }
 
     @Override
     public void onChanged() {
-        if (wrappedAdapter.getCount() < itemsVerticalOffset.length) {
-            return;
-        }
+//        itemsVerticalOffset = itemsVerticalOffset.subList(0, wrappedAdapter.getCount());
+        itemsVerticalOffset.clear();
+//        resizeOffsetArray();
+    }
 
-        int[] newArray = new int[wrappedAdapter.getCount() + numColumns];
-        System.arraycopy(itemsVerticalOffset, 0, newArray, 0, Math.min(itemsVerticalOffset.length, newArray.length));
-        itemsVerticalOffset = newArray;
+    private void resizeOffsetArray() {
+//        int[] newArray = new int[wrappedAdapter.getCount() + numColumns];
+//        System.arraycopy(itemsVerticalOffset, 0, newArray, 0, Math.min(itemsVerticalOffset.length, newArray.length));
+//        itemsVerticalOffset = newArray;
     }
 }
