@@ -16,7 +16,6 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
     private final int verticalSpacing;
     private final int numColumns;
 
-    //    private int[] itemsVerticalOffset;
     private List<Integer> itemsVerticalOffset;
 
     public static ListAdapter newInstance(ListAdapter adapter, GridView gridView, int columns) {
@@ -130,28 +129,12 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
         }
 
         itemsVerticalOffset.size();
-//        return getMaxVerticalOffset();
         return Collections.max(itemsVerticalOffset);
     }
 
-//    private int getMaxVerticalOffset() {
-//        int maxValue = 0;
-//        for (int i = 0; i < itemsVerticalOffset.length; i++) {
-//            maxValue = Math.max(maxValue, itemsVerticalOffset[i]);
-//        }
-//        return maxValue;
-//    }
-
     @Override
     public void onChanged() {
-//        itemsVerticalOffset = itemsVerticalOffset.subList(0, wrappedAdapter.getCount());
         itemsVerticalOffset.clear();
-//        resizeOffsetArray();
     }
 
-    private void resizeOffsetArray() {
-//        int[] newArray = new int[wrappedAdapter.getCount() + numColumns];
-//        System.arraycopy(itemsVerticalOffset, 0, newArray, 0, Math.min(itemsVerticalOffset.length, newArray.length));
-//        itemsVerticalOffset = newArray;
-    }
 }

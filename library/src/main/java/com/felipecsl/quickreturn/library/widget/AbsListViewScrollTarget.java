@@ -34,7 +34,10 @@ public class AbsListViewScrollTarget implements AbsListView.OnScrollListener {
         int delta = maxVerticalOffset - listViewHeight;
         int min1 = isKnownOffsetIsBiggerThanList ? delta : listViewHeight;
 
-        final int rawY = -Math.min(min1, getComputedScrollY());
+        int computedScrollY = getComputedScrollY();
+//        final int rawY = -Math.min(min1, computedScrollY);
+        int rawY = -getComputedScrollY();
+        android.util.Log.w("YO", "rawY: " + rawY + "\t\t min1: " + min1 + "\t\t computedScrollY: " + computedScrollY);
 
         final int translationY = quickReturnTargetView.determineState(rawY, targetView.getHeight());
 
