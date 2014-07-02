@@ -2,39 +2,18 @@ package com.felipecsl.quickreturn.library.widget;
 
 import android.view.View;
 import android.widget.AbsListView;
-import android.widget.GridView;
-import android.widget.ListAdapter;
-import android.widget.WrapperListAdapter;
 
-public class AbsListViewScrollTarget extends QuickReturnTargetView implements AbsListView.OnScrollListener {
+public class AbsListViewScrollTarget implements AbsListView.OnScrollListener {
 
     private final AbsListView listView;
+    private final View targetView;
+
+    private final QuickReturnTargetView quickReturnTargetView;
 
     public AbsListViewScrollTarget(final AbsListView listView, final View targetView) {
-        super(targetView);
-
         this.listView = listView;
-        final QuickReturnAdapter adapter = getAdapter();
-
-        if (adapter == null) {
-            throw new UnsupportedOperationException("You need to set the listView adapter before adding a targetView");
-        }
-
-        adapter.setVerticalSpacing(((GridView) listView).getVerticalSpacing());
-    }
-
-    private QuickReturnAdapter getAdapter() {
-        ListAdapter adapter = listView.getAdapter();
-
-        if (adapter instanceof WrapperListAdapter) {
-            adapter = ((WrapperListAdapter) adapter).getWrappedAdapter();
-        }
-
-        if (!(adapter instanceof QuickReturnAdapter)) {
-            throw new UnsupportedOperationException("Your QuickReturn ListView adapter must be an instance of QuickReturnAdapter.");
-        }
-
-        return (QuickReturnAdapter) adapter;
+        this.targetView = targetView;
+        this.quickReturnTargetView = new QuickReturnTargetView(targetView);
     }
 
     @Override
@@ -43,19 +22,23 @@ public class AbsListViewScrollTarget extends QuickReturnTargetView implements Ab
 
     @Override
     public void onScroll(final AbsListView view, final int firstVisibleItem, final int visibleItemCount, final int totalItemCount) {
-        if (listView.getAdapter() == null || quickReturnView == null) {
+        if (invalidState()) {
             return;
         }
 
-        final int maxVerticalOffset = getAdapter().getMaxVerticalOffset();
+        final int maxVerticalOffset = ((QuickReturnAdapter) listView.getAdapter()).getMaxVerticalOffset();
         final int listViewHeight = listView.getHeight();
         final int rawY = -Math.min(maxVerticalOffset > listViewHeight
                 ? maxVerticalOffset - listViewHeight
                 : listViewHeight, getComputedScrollY());
 
-        final int translationY = currentTransition.determineState(rawY, quickReturnView.getHeight());
+        final int translationY = quickReturnTargetView.currentTransition.determineState(rawY, targetView.getHeight());
 
-        translateTo(translationY);
+        quickReturnTargetView.translateTo(translationY);
+    }
+
+    private boolean invalidState() {
+        return listView.getAdapter() == null || targetView == null;
     }
 
     protected int getComputedScrollY() {
@@ -65,6 +48,6 @@ public class AbsListViewScrollTarget extends QuickReturnTargetView implements Ab
 
         int pos = listView.getFirstVisiblePosition();
         final View view = listView.getChildAt(0);
-        return getAdapter().getPositionVerticalOffset(pos) - view.getTop();
+        return ((QuickReturnAdapter) listView.getAdapter()).getPositionVerticalOffset(pos) - view.getTop();
     }
 }

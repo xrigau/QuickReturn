@@ -4,7 +4,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 
-import com.felipecsl.quickreturn.library.widget.QuickReturnTargetView;
+import com.felipecsl.quickreturn.library.widget.AbsListViewScrollTarget;
 
 public abstract class QuickReturnAttacher {
 
@@ -12,5 +12,5 @@ public abstract class QuickReturnAttacher {
         return new AbsListViewQuickReturnAttacher((AbsListView) viewGroup);
     }
 
-    public abstract QuickReturnTargetView addTargetView(final View view);
+    public abstract AbsListViewScrollTarget addTargetView(final View view);
 }

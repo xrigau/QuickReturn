@@ -4,14 +4,11 @@ import android.view.View;
 
 import com.felipecsl.quickreturn.library.QuickReturnStateTransition;
 
-public abstract class QuickReturnTargetView {
-
-    protected static final String TAG = "QuickReturnTargetView";
+public class QuickReturnTargetView {
 
     protected static final int STATE_ONSCREEN = 0;
     protected static final int STATE_OFFSCREEN = 1;
     protected static final int STATE_RETURNING = 2;
-    protected static final int STATE_EXPANDED = 3;
 
     protected int currentState = STATE_ONSCREEN;
     protected int minRawY;

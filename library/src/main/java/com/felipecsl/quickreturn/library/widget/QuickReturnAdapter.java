@@ -3,6 +3,7 @@ package com.felipecsl.quickreturn.library.widget;
 import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.GridView;
 import android.widget.ListAdapter;
 
 import java.util.ArrayList;
@@ -12,14 +13,23 @@ import java.util.List;
 public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
 
     private final ListAdapter wrappedAdapter;
+    private final int verticalSpacing;
+    private final int numColumns;
     private int[] itemsVerticalOffset;
-    private final int numColumns = 3; // TODO
-    private int verticalSpacing;
 
-    public QuickReturnAdapter(final ListAdapter wrappedAdapter) {
+    public static ListAdapter newInstance(ListAdapter adapter, GridView gridView, int columns) {
+        int verticalSpacing = gridView.getVerticalSpacing();
+        int[] itemsVerticalOffset = new int[adapter.getCount() + columns];
+        QuickReturnAdapter quickReturnAdapter = new QuickReturnAdapter(adapter, verticalSpacing, columns, itemsVerticalOffset);
+        adapter.registerDataSetObserver(quickReturnAdapter);
+        return quickReturnAdapter;
+    }
+
+    private QuickReturnAdapter(ListAdapter wrappedAdapter, int verticalSpacing, int numColumns, int[] itemsVerticalOffset) {
         this.wrappedAdapter = wrappedAdapter;
-        itemsVerticalOffset = new int[wrappedAdapter.getCount() + numColumns];
-        wrappedAdapter.registerDataSetObserver(this);
+        this.verticalSpacing = verticalSpacing;
+        this.numColumns = numColumns;
+        this.itemsVerticalOffset = itemsVerticalOffset;
     }
 
     @Override
@@ -97,10 +107,6 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
     }
 
     public int getPositionVerticalOffset(int position) {
-        if (position >= itemsVerticalOffset.length) {
-            return 0;
-        }
-
         return itemsVerticalOffset[position];
     }
 
@@ -127,9 +133,5 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
         int[] newArray = new int[wrappedAdapter.getCount() + numColumns];
         System.arraycopy(itemsVerticalOffset, 0, newArray, 0, Math.min(itemsVerticalOffset.length, newArray.length));
         itemsVerticalOffset = newArray;
-    }
-
-    public void setVerticalSpacing(final int verticalSpacing) {
-        this.verticalSpacing = verticalSpacing;
     }
 }
