@@ -41,7 +41,7 @@ public class MainActivity
         actionBar.setTitle("");
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
         final String[] actionBarItems = {"ListView", "GridView", "ScrollView"};
-        final SpinnerAdapter spinnerAdapter = new ArrayAdapter<>(this, R.layout.action_bar_spinner_text, actionBarItems);
+        final SpinnerAdapter spinnerAdapter = new ArrayAdapter<String>(this, R.layout.action_bar_spinner_text, actionBarItems);
 
         actionBar.setListNavigationCallbacks(spinnerAdapter, this);
 
@@ -55,7 +55,7 @@ public class MainActivity
         topTextView = (TextView) findViewById(R.id.quickReturnTopTarget);
         bottomTextView = (TextView) findViewById(R.id.quickReturnBottomTarget);
 
-        adapter = new ArrayAdapter<>(this, R.layout.list_item);
+        adapter = new ArrayAdapter<String>(this, R.layout.list_item);
         addMoreItems(100);
 
         if (viewGroup instanceof AbsListView) {

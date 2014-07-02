@@ -127,7 +127,7 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
         if (isEmpty())
             return 0;
 
-        final List<Integer> items = new ArrayList<>(itemsVerticalOffset.length);
+        final List<Integer> items = new ArrayList<Integer>(itemsVerticalOffset.length);
         for (final int aMItemOffsetY : itemsVerticalOffset) items.add(aMItemOffsetY);
         return Collections.max(items);
     }
