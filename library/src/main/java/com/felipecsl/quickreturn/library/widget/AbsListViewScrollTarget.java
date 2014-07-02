@@ -26,13 +26,17 @@ public class AbsListViewScrollTarget implements AbsListView.OnScrollListener {
             return;
         }
 
-        final int maxVerticalOffset = ((QuickReturnAdapter) listView.getAdapter()).getMaxVerticalOffset();
+        final int maxVerticalOffset = ((QuickReturnAdapter) listView.getAdapter()).getBottomVisibleItemOffset();
         final int listViewHeight = listView.getHeight();
-        final int rawY = -Math.min(maxVerticalOffset > listViewHeight
-                ? maxVerticalOffset - listViewHeight
-                : listViewHeight, getComputedScrollY());
 
-        final int translationY = quickReturnTargetView.currentTransition.determineState(rawY, targetView.getHeight());
+        boolean isKnownOffsetIsBiggerThanList = maxVerticalOffset > listViewHeight;
+
+        int delta = maxVerticalOffset - listViewHeight;
+        int min1 = isKnownOffsetIsBiggerThanList ? delta : listViewHeight;
+
+        final int rawY = -Math.min(min1, getComputedScrollY());
+
+        final int translationY = quickReturnTargetView.determineState(rawY, targetView.getHeight());
 
         quickReturnTargetView.translateTo(translationY);
     }
@@ -48,6 +52,6 @@ public class AbsListViewScrollTarget implements AbsListView.OnScrollListener {
 
         int pos = listView.getFirstVisiblePosition();
         final View view = listView.getChildAt(0);
-        return ((QuickReturnAdapter) listView.getAdapter()).getPositionVerticalOffset(pos) - view.getTop();
+        return ((QuickReturnAdapter) listView.getAdapter()).getPositionVerticalOffset(pos) - view.getTop() + listView.getPaddingTop();
     }
 }

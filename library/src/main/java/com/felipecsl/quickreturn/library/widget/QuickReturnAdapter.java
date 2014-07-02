@@ -6,10 +6,6 @@ import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
 
     private final ListAdapter wrappedAdapter;
@@ -74,12 +70,10 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
 
     @Override
     public View getView(final int position, final View convertView, final ViewGroup parent) {
-        View v;
-        int finalHeight;
-        v = wrappedAdapter.getView(position, convertView, parent);
+        View v = wrappedAdapter.getView(position, convertView, parent);
 
         v.measure(View.MeasureSpec.makeMeasureSpec(parent.getWidth() / numColumns, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        finalHeight = v.getMeasuredHeight();
+        int finalHeight = v.getMeasuredHeight();
 
         if (position + numColumns < itemsVerticalOffset.length) {
             itemsVerticalOffset[position + numColumns] = itemsVerticalOffset[position] + finalHeight + verticalSpacing;
@@ -110,22 +104,20 @@ public class QuickReturnAdapter extends DataSetObserver implements ListAdapter {
         return itemsVerticalOffset[position];
     }
 
-    public int getMaxVerticalOffset() {
+    public int getBottomVisibleItemOffset() {
         if (isEmpty()) {
             return 0;
         }
 
-        final List<Integer> items = new ArrayList<Integer>(itemsVerticalOffset.length);
-        for (final int aMItemOffsetY : itemsVerticalOffset) {
-            items.add(aMItemOffsetY);
+        int maxValue = 0;
+        for (int i = 0; i < itemsVerticalOffset.length; i++) {
+            maxValue = Math.max(maxValue, itemsVerticalOffset[i]);
         }
-        return Collections.max(items);
+        return maxValue;
     }
 
     @Override
     public void onChanged() {
-        super.onChanged();
-
         if (wrappedAdapter.getCount() < itemsVerticalOffset.length) {
             return;
         }
