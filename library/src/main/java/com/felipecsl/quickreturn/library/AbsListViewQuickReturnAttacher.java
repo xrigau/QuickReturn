@@ -4,14 +4,11 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ListView;
 
 import com.felipecsl.quickreturn.library.widget.AbsListViewScrollTarget;
 import com.felipecsl.quickreturn.library.widget.QuickReturnTargetView;
 
-public class AbsListViewQuickReturnAttacher
-        extends QuickReturnAttacher
-        implements AdapterView.OnItemClickListener {
+public class AbsListViewQuickReturnAttacher extends QuickReturnAttacher implements AdapterView.OnItemClickListener {
     private static final String TAG = "AbsListViewQuickReturnAttacher";
 
     private final CompositeAbsListViewOnScrollListener onScrollListener = new CompositeAbsListViewOnScrollListener();
@@ -24,12 +21,8 @@ public class AbsListViewQuickReturnAttacher
         listView.setOnItemClickListener(this);
     }
 
-    public QuickReturnTargetView addTargetView(final View view, final int position) {
-        return addTargetView(view, position, 0);
-    }
-
-    public QuickReturnTargetView addTargetView(final View view, final int position, final int viewHeight) {
-        final AbsListViewScrollTarget targetView = new AbsListViewScrollTarget(absListView, view, position, viewHeight);
+    public QuickReturnTargetView addTargetView(final View view) {
+        final AbsListViewScrollTarget targetView = new AbsListViewScrollTarget(absListView, view);
         onScrollListener.registerOnScrollListener(targetView);
 
         return targetView;
@@ -51,15 +44,7 @@ public class AbsListViewQuickReturnAttacher
     public void onItemClick(final AdapterView<?> parent, final View view, final int position, final long id) {
         int positionOffset;
         if (onItemClickListener != null) {
-            if (parent instanceof ListView)
-                positionOffset = 1;
-            else if (parent instanceof GridView)
-                // TODO: getNumColumns may return AUTO_FIT.
-                // TODO: Need fallback for Gingerbread.
-                positionOffset = ((GridView) parent).getNumColumns();
-            else
-                positionOffset = 0;
-
+            positionOffset = ((GridView) parent).getNumColumns();
             // TODO: Sending incorrect view` and `id` args below.
             onItemClickListener.onItemClick(parent, view, position - positionOffset, id);
         }

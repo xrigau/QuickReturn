@@ -4,9 +4,7 @@ import android.widget.AbsListView;
 
 import java.util.ArrayList;
 
-public class CompositeAbsListViewOnScrollListener
-        extends ArrayList<AbsListView.OnScrollListener>
-        implements AbsListView.OnScrollListener {
+public class CompositeAbsListViewOnScrollListener extends ArrayList<AbsListView.OnScrollListener> implements AbsListView.OnScrollListener {
 
     public void registerOnScrollListener(final AbsListView.OnScrollListener listener) {
         add(listener);
