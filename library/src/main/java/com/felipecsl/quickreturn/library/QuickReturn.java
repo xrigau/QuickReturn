@@ -4,7 +4,7 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
-import com.felipecsl.quickreturn.library.widget.QuickReturnAdapter;
+import com.felipecsl.quickreturn.library.adapter.QuickReturnAdapter;
 
 public class QuickReturn {
 
@@ -22,10 +22,11 @@ public class QuickReturn {
         this.columns = columns;
     }
 
-    public QuickReturn addHeader(View view) {
-        gridView.setAdapter(QuickReturnAdapter.newInstance(adapter, gridView, columns));
-        QuickReturnAttacher quickReturnAttacher = QuickReturnAttacher.forView(gridView);
-        quickReturnAttacher.addTargetView(view);
-        return this;
+    public void addHeader(View view) {
+        ListAdapter quickReturnAdapter = QuickReturnAdapter.newInstance(adapter, gridView, columns);
+        gridView.setAdapter(quickReturnAdapter);
+
+        QuickReturnHeaderViewAttacher quickReturnAttacher = QuickReturnHeaderViewAttacher.newInstance(gridView);
+        quickReturnAttacher.attach(view);
     }
 }

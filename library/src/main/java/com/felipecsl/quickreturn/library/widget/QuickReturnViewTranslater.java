@@ -2,47 +2,51 @@ package com.felipecsl.quickreturn.library.widget;
 
 import android.view.View;
 
-public class QuickReturnTargetView {
+import static com.felipecsl.quickreturn.library.widget.QuickReturnViewTranslater.QuickReturnState.OFFSCREEN;
+import static com.felipecsl.quickreturn.library.widget.QuickReturnViewTranslater.QuickReturnState.ONSCREEN;
+import static com.felipecsl.quickreturn.library.widget.QuickReturnViewTranslater.QuickReturnState.RETURNING;
 
-    protected static final int STATE_ONSCREEN = 0;
-    protected static final int STATE_OFFSCREEN = 1;
-    protected static final int STATE_RETURNING = 2;
+public class QuickReturnViewTranslater {
 
-    protected int currentState = STATE_ONSCREEN;
-    protected int minRawY;
-    protected View quickReturnView;
+    enum QuickReturnState {
+        ONSCREEN, OFFSCREEN, RETURNING;
+    }
 
-    public QuickReturnTargetView(final View targetView) {
+    private QuickReturnState currentState = ONSCREEN;
+    private int minRawY;
+    private View quickReturnView;
+
+    public QuickReturnViewTranslater(View targetView) {
         quickReturnView = targetView;
     }
 
-    protected void translateTo(final int translationY) {
+    public void translateTo(int translationY) {
         quickReturnView.setTranslationY(translationY);
     }
 
     public int determineState(int rawY, int quickReturnHeight) {
-        int translationY = 0;
+        int translationY;
 
         switch (currentState) {
-            case STATE_OFFSCREEN:
+            case OFFSCREEN:
                 if (rawY <= minRawY) {
                     minRawY = rawY;
                 } else {
-                    currentState = STATE_RETURNING;
+                    currentState = RETURNING;
                 }
 
                 translationY = rawY;
                 break;
 
-            case STATE_ONSCREEN:
+            case ONSCREEN:
                 if (rawY < -quickReturnHeight) {
-                    currentState = STATE_OFFSCREEN;
+                    currentState = OFFSCREEN;
                     minRawY = rawY;
                 }
                 translationY = rawY;
                 break;
 
-            case STATE_RETURNING:
+            case RETURNING:
                 translationY = (rawY - minRawY) - quickReturnHeight;
                 if (translationY > 0) {
                     translationY = 0;
@@ -50,16 +54,19 @@ public class QuickReturnTargetView {
                 }
 
                 if (rawY > 0) {
-                    currentState = STATE_ONSCREEN;
+                    currentState = ONSCREEN;
                     translationY = rawY;
                 }
 
                 if (translationY < -quickReturnHeight) {
-                    currentState = STATE_OFFSCREEN;
+                    currentState = OFFSCREEN;
                     minRawY = rawY;
                 }
                 break;
+            default:
+                throw new IllegalStateException("State not handled properly: " + currentState.name());
         }
+
         return translationY;
     }
 
